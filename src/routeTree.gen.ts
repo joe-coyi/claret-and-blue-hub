@@ -19,6 +19,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as QuizzesIdRouteImport } from './routes/quizzes.$id'
+import { Route as PlayersIdRouteImport } from './routes/players.$id'
 import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 import { Route as MatchesIdRouteImport } from './routes/matches.$id'
 
@@ -72,6 +73,11 @@ const QuizzesIdRoute = QuizzesIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => QuizzesRoute,
 } as any)
+const PlayersIdRoute = PlayersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => PlayersRoute,
+} as any)
 const NewsSlugRoute = NewsSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -90,11 +96,12 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof LeaderboardRoute
   '/matches': typeof MatchesRouteWithChildren
   '/news': typeof NewsRouteWithChildren
-  '/players': typeof PlayersRoute
+  '/players': typeof PlayersRouteWithChildren
   '/polls': typeof PollsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
   '/matches/$id': typeof MatchesIdRoute
   '/news/$slug': typeof NewsSlugRoute
+  '/players/$id': typeof PlayersIdRoute
   '/quizzes/$id': typeof QuizzesIdRoute
 }
 export interface FileRoutesByTo {
@@ -104,11 +111,12 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof LeaderboardRoute
   '/matches': typeof MatchesRouteWithChildren
   '/news': typeof NewsRouteWithChildren
-  '/players': typeof PlayersRoute
+  '/players': typeof PlayersRouteWithChildren
   '/polls': typeof PollsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
   '/matches/$id': typeof MatchesIdRoute
   '/news/$slug': typeof NewsSlugRoute
+  '/players/$id': typeof PlayersIdRoute
   '/quizzes/$id': typeof QuizzesIdRoute
 }
 export interface FileRoutesById {
@@ -119,11 +127,12 @@ export interface FileRoutesById {
   '/leaderboard': typeof LeaderboardRoute
   '/matches': typeof MatchesRouteWithChildren
   '/news': typeof NewsRouteWithChildren
-  '/players': typeof PlayersRoute
+  '/players': typeof PlayersRouteWithChildren
   '/polls': typeof PollsRoute
   '/quizzes': typeof QuizzesRouteWithChildren
   '/matches/$id': typeof MatchesIdRoute
   '/news/$slug': typeof NewsSlugRoute
+  '/players/$id': typeof PlayersIdRoute
   '/quizzes/$id': typeof QuizzesIdRoute
 }
 export interface FileRouteTypes {
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
     | '/quizzes'
     | '/matches/$id'
     | '/news/$slug'
+    | '/players/$id'
     | '/quizzes/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/quizzes'
     | '/matches/$id'
     | '/news/$slug'
+    | '/players/$id'
     | '/quizzes/$id'
   id:
     | '__root__'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '/quizzes'
     | '/matches/$id'
     | '/news/$slug'
+    | '/players/$id'
     | '/quizzes/$id'
   fileRoutesById: FileRoutesById
 }
@@ -178,7 +190,7 @@ export interface RootRouteChildren {
   LeaderboardRoute: typeof LeaderboardRoute
   MatchesRoute: typeof MatchesRouteWithChildren
   NewsRoute: typeof NewsRouteWithChildren
-  PlayersRoute: typeof PlayersRoute
+  PlayersRoute: typeof PlayersRouteWithChildren
   PollsRoute: typeof PollsRoute
   QuizzesRoute: typeof QuizzesRouteWithChildren
 }
@@ -255,6 +267,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuizzesIdRouteImport
       parentRoute: typeof QuizzesRoute
     }
+    '/players/$id': {
+      id: '/players/$id'
+      path: '/$id'
+      fullPath: '/players/$id'
+      preLoaderRoute: typeof PlayersIdRouteImport
+      parentRoute: typeof PlayersRoute
+    }
     '/news/$slug': {
       id: '/news/$slug'
       path: '/$slug'
@@ -293,6 +312,17 @@ const NewsRouteChildren: NewsRouteChildren = {
 
 const NewsRouteWithChildren = NewsRoute._addFileChildren(NewsRouteChildren)
 
+interface PlayersRouteChildren {
+  PlayersIdRoute: typeof PlayersIdRoute
+}
+
+const PlayersRouteChildren: PlayersRouteChildren = {
+  PlayersIdRoute: PlayersIdRoute,
+}
+
+const PlayersRouteWithChildren =
+  PlayersRoute._addFileChildren(PlayersRouteChildren)
+
 interface QuizzesRouteChildren {
   QuizzesIdRoute: typeof QuizzesIdRoute
 }
@@ -311,10 +341,20 @@ const rootRouteChildren: RootRouteChildren = {
   LeaderboardRoute: LeaderboardRoute,
   MatchesRoute: MatchesRouteWithChildren,
   NewsRoute: NewsRouteWithChildren,
-  PlayersRoute: PlayersRoute,
+  PlayersRoute: PlayersRouteWithChildren,
   PollsRoute: PollsRoute,
   QuizzesRoute: QuizzesRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
