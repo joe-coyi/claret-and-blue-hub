@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Radio } from "lucide-react";
 
 export const Route = createFileRoute("/matches")({
   head: () => ({ meta: [{ title: "Matchday Center — Claret & Co." },{ name:"description", content:"Live scores, fixtures, and results for West Ham United." }] }),
@@ -20,17 +21,13 @@ function Matches() {
 
   return (
     <div className="container mx-auto px-4 py-12">
+      {live.length > 0 && (
+        <div className="mb-8">
+          {live.map(m => <LiveBanner key={m.id} m={m} />)}
+        </div>
+      )}
       <p className="text-xs uppercase tracking-widest text-accent">Matchday Center</p>
       <h1 className="font-display text-4xl md:text-6xl uppercase">All fixtures &amp; results</h1>
-
-      {live.length > 0 && (
-        <section className="mt-10">
-          <h2 className="font-display uppercase text-xl mb-4 flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-destructive animate-pulse" /> Live now
-          </h2>
-          <div className="grid md:grid-cols-2 gap-4">{live.map(m => <MatchCard key={m.id} m={m} />)}</div>
-        </section>
-      )}
 
       <section className="mt-12">
         <h2 className="font-display uppercase text-xl mb-4">Upcoming</h2>
@@ -47,6 +44,39 @@ function Matches() {
         </div>
       </section>
     </div>
+  );
+}
+
+export function LiveBanner({ m }: { m: any }) {
+  const wh = m.is_home ? m.west_ham_score : m.opponent_score;
+  const op = m.is_home ? m.opponent_score : m.west_ham_score;
+  return (
+    <Link to="/matches/$id" params={{ id: m.id }}>
+      <div
+        className="relative overflow-hidden rounded-xl p-6 md:p-8 border-2"
+        style={{
+          borderColor: "oklch(0.82 0.16 85)",
+          background: "linear-gradient(135deg, oklch(0.25 0.05 60) 0%, oklch(0.18 0.03 30) 60%, oklch(0.30 0.10 80) 100%)",
+          boxShadow: "0 0 60px -10px oklch(0.82 0.16 85 / 0.45)",
+        }}
+      >
+        <div className="absolute top-3 right-4 flex items-center gap-2 text-xs uppercase tracking-widest" style={{ color: "oklch(0.92 0.16 90)" }}>
+          <Radio className="h-3.5 w-3.5 animate-pulse" />
+          Live now {m.current_minute ? `· ${m.current_minute}'` : ""}
+        </div>
+        <p className="text-xs uppercase tracking-widest" style={{ color: "oklch(0.92 0.16 90)" }}>
+          {m.competition} · {m.is_home ? "Home" : "Away"} · {m.venue}
+        </p>
+        <div className="mt-4 flex items-center justify-between gap-6">
+          <div className="font-display text-2xl md:text-3xl uppercase flex-1">{m.is_home ? "West Ham" : m.opponent}</div>
+          <div className="font-display text-5xl md:text-7xl tabular-nums" style={{ color: "oklch(0.92 0.16 90)" }}>
+            {wh ?? 0} <span className="text-foreground/40">-</span> {op ?? 0}
+          </div>
+          <div className="font-display text-2xl md:text-3xl uppercase flex-1 text-right">{m.is_home ? m.opponent : "West Ham"}</div>
+        </div>
+        <div className="mt-4 text-xs uppercase tracking-widest text-foreground/70">Tap for live timeline, lineups &amp; goal scorers →</div>
+      </div>
+    </Link>
   );
 }
 
