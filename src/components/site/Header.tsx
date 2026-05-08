@@ -6,6 +6,7 @@ import { Hammer, LogOut, Shield } from "lucide-react";
 const nav = [
   { to: "/", label: "Home" },
   { to: "/matches", label: "Matchday" },
+  { to: "/news", label: "News" },
   { to: "/players", label: "Squad" },
   { to: "/polls", label: "Polls" },
   { to: "/quizzes", label: "Quizzes" },
