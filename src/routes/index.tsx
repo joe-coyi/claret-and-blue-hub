@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Trophy, Users, Vote, Brain, Sparkles, Activity } from "lucide-react";
+import { LiveBanner } from "./matches";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -25,9 +26,15 @@ function Home() {
   });
   const upcoming = (matches ?? []).filter(m => m.status !== "finished").slice(0, 3);
   const recent = (matches ?? []).filter(m => m.status === "finished").slice(-2);
+  const live = (matches ?? []).filter(m => m.status === "live");
 
   return (
     <div>
+      {live.length > 0 && (
+        <div className="container mx-auto px-4 pt-6">
+          {live.map(m => <LiveBanner key={m.id} m={m} />)}
+        </div>
+      )}
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div
