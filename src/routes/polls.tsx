@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 
 export const Route = createFileRoute("/polls")({
   head: () => ({ meta:[{title:"Fan Polls — Claret & Co."},{name:"description",content:"Vote in fan polls and predict matches."}]}),
@@ -55,7 +56,10 @@ function Polls() {
         </p>
       )}
       <div className="mt-8 grid md:grid-cols-2 gap-4">
-        {polls?.map(p => <PollCard key={p.id} p={p} votes={votes ?? []} myVotes={myVotes ?? []} user={user} pending={vote.isPending} onVote={(ids)=>vote.mutate({pollId:p.id, optionIds:ids})}/>)}
+        {polls?.map(p => (
+          <PollCard key={p.id} p={p} votes={votes ?? []} myVotes={myVotes ?? []} user={user} pending={vote.isPending}
+            onVote={(ids: string[]) => vote.mutate({ pollId: p.id, optionIds: ids })}/>
+        ))}
       </div>
     </div>
   );
@@ -72,7 +76,7 @@ function PollCard({ p, votes, myVotes, user, pending, onVote }: any) {
     ? new Set(pollVotes.map((v:any)=>v.user_id)).size
     : pollVotes.length;
 
-  const [picks, setPicks] = (require("react") as typeof import("react")).useState<string[]>([]);
+  const [picks, setPicks] = useState<string[]>([]);
 
   function toggle(id: string) {
     if (hasVoted || closed) return;
