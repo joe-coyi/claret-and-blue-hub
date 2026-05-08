@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+import { Trash2, Users } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 export function AdminMatches() {
   const qc = useQueryClient();
@@ -17,6 +18,7 @@ export function AdminMatches() {
   const { data: players } = useQuery({ queryKey:["players-min"], queryFn: async () => (await supabase.from("players").select("id,name")).data ?? [] });
 
   const [form, setForm] = useState({ opponent:"", competition:"Premier League", kickoff:"", is_home:true, venue:"London Stadium" });
+  const [lineupOpen, setLineupOpen] = useState<string|null>(null);
 
   async function add(e: React.FormEvent) {
     e.preventDefault();
@@ -30,6 +32,16 @@ export function AdminMatches() {
   async function remove(id: string) {
     const { error } = await supabase.from("matches").delete().eq("id", id);
     if (error) toast.error(error.message); else { qc.invalidateQueries({queryKey:["admin-matches"]}); }
+  }
+
+  function parseLineup(text: string) {
+    return text.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{
+      const [name, number, position] = l.split("|").map(s=>s?.trim());
+      return { name, number: number ? Number(number) : null, position: position || "" };
+    });
+  }
+  function lineupToText(arr: any[]) {
+    return (arr ?? []).map(p => [p.name, p.number ?? "", p.position ?? ""].join(" | ")).join("\n");
   }
 
   return (
@@ -62,13 +74,33 @@ export function AdminMatches() {
               </select>
               <Input type="number" className="w-20" placeholder="WH" defaultValue={m.west_ham_score ?? ""} onBlur={e=>update(m.id,{west_ham_score: e.target.value===""?null:Number(e.target.value)})}/>
               <Input type="number" className="w-20" placeholder="OPP" defaultValue={m.opponent_score ?? ""} onBlur={e=>update(m.id,{opponent_score: e.target.value===""?null:Number(e.target.value)})}/>
+              <Input type="number" className="w-20" placeholder="Min" defaultValue={m.current_minute ?? ""} onBlur={e=>update(m.id,{current_minute: e.target.value===""?null:Number(e.target.value)})}/>
               <select value={m.motm_player_id ?? ""} onChange={e=>update(m.id,{motm_player_id: e.target.value || null})}
                 className="bg-input border border-border rounded-md px-2 py-1 text-sm">
                 <option value="">MOTM…</option>
                 {players?.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
+              <Button variant="outline" size="sm" onClick={()=>setLineupOpen(lineupOpen===m.id?null:m.id)}><Users className="h-3.5 w-3.5"/>Lineups</Button>
               <Button variant="ghost" size="icon" onClick={()=>remove(m.id)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
             </div>
+            {lineupOpen === m.id && (
+              <div className="mt-4 grid md:grid-cols-2 gap-3 border-t border-border pt-4">
+                <div>
+                  <Label>West Ham XI (one per line: Name | Number | Position)</Label>
+                  <Textarea rows={11} defaultValue={lineupToText(m.lineup_west_ham as any[])}
+                    onBlur={e=>update(m.id, { lineup_west_ham: parseLineup(e.target.value) })}/>
+                </div>
+                <div>
+                  <Label>{m.opponent} XI</Label>
+                  <Textarea rows={11} defaultValue={lineupToText(m.lineup_opponent as any[])}
+                    onBlur={e=>update(m.id, { lineup_opponent: parseLineup(e.target.value) })}/>
+                </div>
+                <div className="md:col-span-2">
+                  <Label>Match summary</Label>
+                  <Textarea rows={2} defaultValue={m.summary ?? ""} onBlur={e=>update(m.id,{summary:e.target.value || null})}/>
+                </div>
+              </div>
+            )}
           </Card>
         ))}
       </div>
