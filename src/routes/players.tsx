@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -17,18 +17,26 @@ function Players() {
   const grouped = (players ?? []).reduce((acc: any, p: any) => {
     (acc[p.position] ||= []).push(p); return acc;
   }, {});
+  const order = ["Goalkeeper", "Defender", "Midfielder", "Forward"];
+  const labels: Record<string, string> = {
+    Goalkeeper: "Goalkeepers",
+    Defender: "Defenders",
+    Midfielder: "Midfielders",
+    Forward: "Attackers",
+  };
 
   return (
     <div className="container mx-auto px-4 py-12">
       <p className="text-xs uppercase tracking-widest text-accent">The Squad</p>
       <h1 className="font-display text-4xl md:text-6xl uppercase">Meet the Hammers</h1>
 
-      {Object.entries(grouped).map(([pos, list]: any) => (
+      {order.filter((pos) => grouped[pos]?.length).map((pos) => (
         <section key={pos} className="mt-10">
-          <h2 className="font-display uppercase text-xl mb-4 text-muted-foreground">{pos}s</h2>
+          <h2 className="font-display uppercase text-xl mb-4 text-muted-foreground">{labels[pos]}</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {list.map((p:any) => (
-              <Card key={p.id} className="stadium-card p-6 border-0">
+            {grouped[pos].map((p:any) => (
+              <Link key={p.id} to="/players/$id" params={{ id: p.id }} className="block h-full">
+              <Card className="stadium-card h-full p-6 border-0 hover:border-accent transition-colors">
                 <div className="flex items-start gap-4">
                   <div className="h-16 w-16 rounded-full bg-[var(--gradient-claret)] grid place-items-center font-display text-2xl">
                     {p.shirt_number}
@@ -46,6 +54,7 @@ function Players() {
                   <Stat label="Cards" v={p.yellow_cards + p.red_cards} />
                 </div>
               </Card>
+              </Link>
             ))}
           </div>
         </section>

@@ -82,8 +82,8 @@ export function LiveBanner({ m }: { m: any }) {
 
 function MatchCard({ m }: { m: any }) {
   return (
-    <Link to="/matches/$id" params={{ id: m.id }}>
-      <Card className="stadium-card p-6 border-0 hover:border-accent transition-colors">
+    <Link to="/matches/$id" params={{ id: m.id }} className="block h-full">
+      <Card className="stadium-card h-full p-6 border-0 hover:border-accent transition-colors">
         <div className="flex justify-between items-start">
           <div>
             <div className="text-xs uppercase tracking-widest text-muted-foreground">{m.competition} · {m.is_home?"Home":"Away"}</div>
