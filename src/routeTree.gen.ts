@@ -9,12 +9,38 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as QuizzesRouteImport } from './routes/quizzes'
+import { Route as PollsRouteImport } from './routes/polls'
+import { Route as PlayersRouteImport } from './routes/players'
 import { Route as MatchesRouteImport } from './routes/matches'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as QuizzesIdRouteImport } from './routes/quizzes.$id'
+import { Route as MatchesIdRouteImport } from './routes/matches.$id'
 
+const QuizzesRoute = QuizzesRouteImport.update({
+  id: '/quizzes',
+  path: '/quizzes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PollsRoute = PollsRouteImport.update({
+  id: '/polls',
+  path: '/polls',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayersRoute = PlayersRouteImport.update({
+  id: '/players',
+  path: '/players',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MatchesRoute = MatchesRouteImport.update({
   id: '/matches',
   path: '/matches',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -22,40 +48,125 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const QuizzesIdRoute = QuizzesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => QuizzesRoute,
+} as any)
+const MatchesIdRoute = MatchesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => MatchesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/matches': typeof MatchesRoute
+  '/leaderboard': typeof LeaderboardRoute
+  '/matches': typeof MatchesRouteWithChildren
+  '/players': typeof PlayersRoute
+  '/polls': typeof PollsRoute
+  '/quizzes': typeof QuizzesRouteWithChildren
+  '/matches/$id': typeof MatchesIdRoute
+  '/quizzes/$id': typeof QuizzesIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/matches': typeof MatchesRoute
+  '/leaderboard': typeof LeaderboardRoute
+  '/matches': typeof MatchesRouteWithChildren
+  '/players': typeof PlayersRoute
+  '/polls': typeof PollsRoute
+  '/quizzes': typeof QuizzesRouteWithChildren
+  '/matches/$id': typeof MatchesIdRoute
+  '/quizzes/$id': typeof QuizzesIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/matches': typeof MatchesRoute
+  '/leaderboard': typeof LeaderboardRoute
+  '/matches': typeof MatchesRouteWithChildren
+  '/players': typeof PlayersRoute
+  '/polls': typeof PollsRoute
+  '/quizzes': typeof QuizzesRouteWithChildren
+  '/matches/$id': typeof MatchesIdRoute
+  '/quizzes/$id': typeof QuizzesIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/matches'
+  fullPaths:
+    | '/'
+    | '/leaderboard'
+    | '/matches'
+    | '/players'
+    | '/polls'
+    | '/quizzes'
+    | '/matches/$id'
+    | '/quizzes/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/matches'
-  id: '__root__' | '/' | '/matches'
+  to:
+    | '/'
+    | '/leaderboard'
+    | '/matches'
+    | '/players'
+    | '/polls'
+    | '/quizzes'
+    | '/matches/$id'
+    | '/quizzes/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/leaderboard'
+    | '/matches'
+    | '/players'
+    | '/polls'
+    | '/quizzes'
+    | '/matches/$id'
+    | '/quizzes/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  MatchesRoute: typeof MatchesRoute
+  LeaderboardRoute: typeof LeaderboardRoute
+  MatchesRoute: typeof MatchesRouteWithChildren
+  PlayersRoute: typeof PlayersRoute
+  PollsRoute: typeof PollsRoute
+  QuizzesRoute: typeof QuizzesRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/quizzes': {
+      id: '/quizzes'
+      path: '/quizzes'
+      fullPath: '/quizzes'
+      preLoaderRoute: typeof QuizzesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/polls': {
+      id: '/polls'
+      path: '/polls'
+      fullPath: '/polls'
+      preLoaderRoute: typeof PollsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/players': {
+      id: '/players'
+      path: '/players'
+      fullPath: '/players'
+      preLoaderRoute: typeof PlayersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/matches': {
       id: '/matches'
       path: '/matches'
       fullPath: '/matches'
       preLoaderRoute: typeof MatchesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -65,12 +176,52 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/quizzes/$id': {
+      id: '/quizzes/$id'
+      path: '/$id'
+      fullPath: '/quizzes/$id'
+      preLoaderRoute: typeof QuizzesIdRouteImport
+      parentRoute: typeof QuizzesRoute
+    }
+    '/matches/$id': {
+      id: '/matches/$id'
+      path: '/$id'
+      fullPath: '/matches/$id'
+      preLoaderRoute: typeof MatchesIdRouteImport
+      parentRoute: typeof MatchesRoute
+    }
   }
 }
 
+interface MatchesRouteChildren {
+  MatchesIdRoute: typeof MatchesIdRoute
+}
+
+const MatchesRouteChildren: MatchesRouteChildren = {
+  MatchesIdRoute: MatchesIdRoute,
+}
+
+const MatchesRouteWithChildren =
+  MatchesRoute._addFileChildren(MatchesRouteChildren)
+
+interface QuizzesRouteChildren {
+  QuizzesIdRoute: typeof QuizzesIdRoute
+}
+
+const QuizzesRouteChildren: QuizzesRouteChildren = {
+  QuizzesIdRoute: QuizzesIdRoute,
+}
+
+const QuizzesRouteWithChildren =
+  QuizzesRoute._addFileChildren(QuizzesRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  MatchesRoute: MatchesRoute,
+  LeaderboardRoute: LeaderboardRoute,
+  MatchesRoute: MatchesRouteWithChildren,
+  PlayersRoute: PlayersRoute,
+  PollsRoute: PollsRoute,
+  QuizzesRoute: QuizzesRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
