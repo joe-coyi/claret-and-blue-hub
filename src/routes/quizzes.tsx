@@ -20,7 +20,7 @@ function Quizzes() {
       <h1 className="font-display text-4xl md:text-6xl uppercase">Prove you bleed claret</h1>
       <div className="mt-8 grid md:grid-cols-2 gap-4">
         {quizzes?.map((q:any) => (
-          <Link key={q.id} to="/quizzes/$id" params={{ id: q.id }}>
+          <Link key={q.id} to="/quizzes/$id" params={{ id: q.id }} className="block h-full">
             <Card className="stadium-card p-6 border-0 hover:border-accent transition-colors h-full">
               <div className="flex items-start gap-3">
                 <div className="h-10 w-10 rounded-md bg-[var(--gradient-claret)] grid place-items-center"><Brain className="h-5 w-5"/></div>
