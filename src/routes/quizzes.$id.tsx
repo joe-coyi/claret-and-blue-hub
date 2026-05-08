@@ -35,8 +35,6 @@ function QuizPlay() {
         quiz_id: quiz.id, user_id: user.id, score, total: questions.length
       });
       const points = score === questions.length ? quiz.points_reward : Math.round(quiz.points_reward * (score/questions.length));
-      await supabase.rpc("noop").catch(()=>{});
-      // increment profile points client-side
       const { data: prof } = await supabase.from("profiles").select("points").eq("id", user.id).maybeSingle();
       if (prof) await supabase.from("profiles").update({ points: (prof.points ?? 0) + points }).eq("id", user.id);
       toast.success(`You scored ${score}/${questions.length} — +${points} points`);
