@@ -87,45 +87,57 @@ export type Database = {
         Row: {
           competition: string
           created_at: string
+          current_minute: number | null
           highlight_url: string | null
           id: string
           image_url: string | null
           is_home: boolean
           kickoff: string
+          lineup_opponent: Json
+          lineup_west_ham: Json
           motm_player_id: string | null
           opponent: string
           opponent_score: number | null
           status: string
+          summary: string | null
           venue: string | null
           west_ham_score: number | null
         }
         Insert: {
           competition: string
           created_at?: string
+          current_minute?: number | null
           highlight_url?: string | null
           id?: string
           image_url?: string | null
           is_home?: boolean
           kickoff: string
+          lineup_opponent?: Json
+          lineup_west_ham?: Json
           motm_player_id?: string | null
           opponent: string
           opponent_score?: number | null
           status?: string
+          summary?: string | null
           venue?: string | null
           west_ham_score?: number | null
         }
         Update: {
           competition?: string
           created_at?: string
+          current_minute?: number | null
           highlight_url?: string | null
           id?: string
           image_url?: string | null
           is_home?: boolean
           kickoff?: string
+          lineup_opponent?: Json
+          lineup_west_ham?: Json
           motm_player_id?: string | null
           opponent?: string
           opponent_score?: number | null
           status?: string
+          summary?: string | null
           venue?: string | null
           west_ham_score?: number | null
         }
@@ -138,6 +150,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      news: {
+        Row: {
+          author: string | null
+          body: string
+          category: string
+          created_at: string
+          excerpt: string | null
+          id: string
+          image_url: string | null
+          published: boolean
+          published_at: string
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author?: string | null
+          body: string
+          category?: string
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          image_url?: string | null
+          published?: boolean
+          published_at?: string
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string | null
+          body?: string
+          category?: string
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          image_url?: string | null
+          published?: boolean
+          published_at?: string
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       players: {
         Row: {
@@ -225,7 +282,9 @@ export type Database = {
           ends_at: string | null
           id: string
           match_id: string | null
+          max_selections: number
           options: Json
+          poll_type: string
           question: string
           starts_at: string
         }
@@ -234,7 +293,9 @@ export type Database = {
           ends_at?: string | null
           id?: string
           match_id?: string | null
+          max_selections?: number
           options: Json
+          poll_type?: string
           question: string
           starts_at?: string
         }
@@ -243,7 +304,9 @@ export type Database = {
           ends_at?: string | null
           id?: string
           match_id?: string | null
+          max_selections?: number
           options?: Json
+          poll_type?: string
           question?: string
           starts_at?: string
         }
