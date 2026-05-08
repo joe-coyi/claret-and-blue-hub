@@ -84,6 +84,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Claret & Co. — The West Ham Fan Hub" },
+      { name: "twitter:description", content: "Live matchday stats, fan polls, quizzes, leaderboards and the home of every Hammers supporter." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/53c80c7f-ff72-4a21-a313-09a5080b9d32/id-preview-3b7facb4--e10705aa-0a1c-41b3-80b6-d1a1a2d2e4f9.lovable.app-1778279773922.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/53c80c7f-ff72-4a21-a313-09a5080b9d32/id-preview-3b7facb4--e10705aa-0a1c-41b3-80b6-d1a1a2d2e4f9.lovable.app-1778279773922.png" },
     ],
     links: [
       {
