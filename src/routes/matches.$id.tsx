@@ -46,7 +46,9 @@ function MatchPage() {
     queryKey: ["match-motm", match?.motm_player_id],
     enabled: !!match?.motm_player_id,
     queryFn: async () => {
-      const { data, error } = await supabase.from("players").select("id, name, photo_url").eq("id", match!.motm_player_id).maybeSingle();
+      const motmId = match?.motm_player_id;
+      if (!motmId) return null;
+      const { data, error } = await supabase.from("players").select("id, name, photo_url").eq("id", motmId).maybeSingle();
       if (error) throw error;
       return data;
     },
