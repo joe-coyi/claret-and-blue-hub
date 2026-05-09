@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -10,6 +10,12 @@ export const Route = createFileRoute("/quizzes")({
 });
 
 function Quizzes() {
+  const location = useLocation();
+
+  if (location.pathname !== "/quizzes") {
+    return <Outlet />;
+  }
+
   const { data: quizzes } = useQuery({
     queryKey: ["quizzes"],
     queryFn: async () => (await supabase.from("quizzes").select("*, quiz_questions(count)").order("created_at")).data ?? [],
