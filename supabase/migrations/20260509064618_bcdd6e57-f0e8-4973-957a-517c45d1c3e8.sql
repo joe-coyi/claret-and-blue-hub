@@ -1,0 +1,1 @@
+ALTER TABLE public.news ADD COLUMN IF NOT EXISTS poll_id uuid REFERENCES public.polls(id) ON DELETE SET NULL;

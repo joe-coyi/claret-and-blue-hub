@@ -7,6 +7,7 @@ import { AdminPlayers } from "@/components/admin/AdminPlayers";
 import { AdminPolls } from "@/components/admin/AdminPolls";
 import { AdminEvents } from "@/components/admin/AdminEvents";
 import { AdminNews } from "@/components/admin/AdminNews";
+import { AdminQuizzes } from "@/components/admin/AdminQuizzes";
 import { Shield } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
@@ -43,12 +44,14 @@ function AdminDashboard() {
           <TabsTrigger value="events">Live events</TabsTrigger>
           <TabsTrigger value="players">Players</TabsTrigger>
           <TabsTrigger value="polls">Polls</TabsTrigger>
+          <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
           <TabsTrigger value="news">News</TabsTrigger>
         </TabsList>
         <TabsContent value="matches"><AdminMatches/></TabsContent>
         <TabsContent value="events"><AdminEvents/></TabsContent>
         <TabsContent value="players"><AdminPlayers/></TabsContent>
         <TabsContent value="polls"><AdminPolls/></TabsContent>
+        <TabsContent value="quizzes"><AdminQuizzes/></TabsContent>
         <TabsContent value="news"><AdminNews/></TabsContent>
       </Tabs>
     </div>

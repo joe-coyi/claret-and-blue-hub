@@ -19,14 +19,19 @@ export function AdminNews() {
     queryKey: ["admin-news"],
     queryFn: async () => (await supabase.from("news").select("*").order("published_at", { ascending:false })).data ?? [],
   });
+  const { data: polls } = useQuery({
+    queryKey: ["admin-news-polls"],
+    queryFn: async () => (await supabase.from("polls").select("id,question").order("created_at",{ascending:false})).data ?? [],
+  });
 
-  const [f, setF] = useState({ title:"", excerpt:"", body:"", image_url:"", category:"general", author:"", published:true });
+  const [f, setF] = useState({ title:"", excerpt:"", body:"", image_url:"", category:"general", author:"", published:true, poll_id:"" });
 
   async function add(e: React.FormEvent) {
     e.preventDefault();
     const slug = slugify(f.title) + "-" + Math.random().toString(36).slice(2,6);
-    const { error } = await supabase.from("news").insert({ ...f, slug });
-    if (error) toast.error(error.message); else { toast.success("Article published"); setF({ title:"", excerpt:"", body:"", image_url:"", category:"general", author:"", published:true }); qc.invalidateQueries({queryKey:["admin-news"]}); }
+    const { poll_id, ...rest } = f;
+    const { error } = await supabase.from("news").insert({ ...rest, slug, poll_id: poll_id || null } as any);
+    if (error) toast.error(error.message); else { toast.success("Article published"); setF({ title:"", excerpt:"", body:"", image_url:"", category:"general", author:"", published:true, poll_id:"" }); qc.invalidateQueries({queryKey:["admin-news"]}); }
   }
 
   return (
@@ -44,6 +49,12 @@ export function AdminNews() {
           <div className="md:col-span-2"><Label>Image URL</Label><Input value={f.image_url} onChange={e=>setF({...f, image_url:e.target.value})} placeholder="https://..."/></div>
           <div className="md:col-span-2"><Label>Excerpt</Label><Textarea value={f.excerpt} onChange={e=>setF({...f, excerpt:e.target.value})} rows={2}/></div>
           <div className="md:col-span-2"><Label>Body</Label><Textarea required value={f.body} onChange={e=>setF({...f, body:e.target.value})} rows={8}/></div>
+          <div className="md:col-span-2"><Label>Embed poll (optional)</Label>
+            <select value={f.poll_id} onChange={e=>setF({...f, poll_id:e.target.value})} className="w-full bg-input border border-border rounded-md px-2 py-2 text-sm">
+              <option value="">— None —</option>
+              {polls?.map(p => <option key={p.id} value={p.id}>{p.question}</option>)}
+            </select>
+          </div>
           <div className="flex items-center gap-3 md:col-span-2">
             <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={f.published} onChange={e=>setF({...f, published:e.target.checked})}/>Published</label>
             <Button className="bg-[var(--gradient-claret)] ml-auto">Publish</Button>

@@ -160,6 +160,7 @@ export type Database = {
           excerpt: string | null
           id: string
           image_url: string | null
+          poll_id: string | null
           published: boolean
           published_at: string
           slug: string
@@ -174,6 +175,7 @@ export type Database = {
           excerpt?: string | null
           id?: string
           image_url?: string | null
+          poll_id?: string | null
           published?: boolean
           published_at?: string
           slug: string
@@ -188,13 +190,22 @@ export type Database = {
           excerpt?: string | null
           id?: string
           image_url?: string | null
+          poll_id?: string | null
           published?: boolean
           published_at?: string
           slug?: string
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "news_poll_id_fkey"
+            columns: ["poll_id"]
+            isOneToOne: false
+            referencedRelation: "polls"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       players: {
         Row: {
