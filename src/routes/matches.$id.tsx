@@ -11,16 +11,55 @@ export const Route = createFileRoute("/matches/$id")({
 
 function MatchPage() {
   const { id } = Route.useParams();
-  const { data: match } = useQuery({
+  const { data: match, isLoading: matchLoading } = useQuery({
     queryKey: ["match", id],
-    queryFn: async () => (await supabase.from("matches").select("*, motm:motm_player_id(name, photo_url)").eq("id", id).maybeSingle()).data,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("matches").select("*").eq("id", id).maybeSingle();
+      if (error) throw error;
+      return data;
+    },
   });
-  const { data: events } = useQuery({
+  const { data: events, isLoading: eventsLoading } = useQuery({
     queryKey: ["events", id],
-    queryFn: async () => (await supabase.from("match_events").select("*, players(name)").eq("match_id", id).order("minute")).data ?? [],
+    enabled: !!match,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("match_events").select("*").eq("match_id", id).order("minute");
+      if (error) throw error;
+      return data ?? [];
+    },
   });
 
-  if (!match) return <div className="container mx-auto px-4 py-20">Loading...</div>;
+  const playerIds = Array.from(new Set((events ?? []).map((event: any) => event.player_id).filter(Boolean)));
+  const { data: eventPlayers } = useQuery({
+    queryKey: ["event-players", id, playerIds.join(",")],
+    enabled: playerIds.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("players").select("id, name, photo_url").in("id", playerIds);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const { data: motm } = useQuery({
+    queryKey: ["match-motm", match?.motm_player_id],
+    enabled: !!match?.motm_player_id,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("players").select("id, name, photo_url").eq("id", match!.motm_player_id).maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const playersById = new Map((eventPlayers ?? []).map((player) => [player.id, player]));
+
+  if (matchLoading || (match && eventsLoading)) {
+    return <div className="container mx-auto px-4 py-20">Loading match...</div>;
+  }
+
+  if (!match) {
+    return <div className="container mx-auto px-4 py-20">Match not found.</div>;
+  }
+
   const isLive = match.status === "live";
   const goldStyle = isLive ? { color: "oklch(0.92 0.16 90)" } : undefined;
 
@@ -54,10 +93,10 @@ function MatchPage() {
           <div className="text-center"><div className="font-display text-2xl uppercase">{match.is_home?match.opponent:"West Ham"}</div></div>
         </div>
         <div className="mt-4 text-center text-sm text-muted-foreground">{new Date(match.kickoff).toLocaleString()} · {match.venue}</div>
-        {match.motm && (
+        {motm && (
           <div className="mt-6 text-center">
             <p className="text-xs uppercase tracking-widest text-accent">Man of the Match</p>
-            <p className="font-display text-xl mt-1">{(match.motm as any).name}</p>
+            <p className="font-display text-xl mt-1">{motm.name}</p>
           </div>
         )}
         {match.summary && <p className="mt-6 text-center text-muted-foreground max-w-2xl mx-auto">{match.summary}</p>}
@@ -70,7 +109,7 @@ function MatchPage() {
           <div className="flex flex-wrap gap-2">
             {events.filter((e:any)=>e.event_type==="goal").map((e:any)=>(
               <span key={e.id} className="px-3 py-1 rounded-full bg-secondary text-sm">
-                <span className="text-accent font-display mr-1">{e.minute}'</span>{e.players?.name ?? "—"}
+                <span className="text-accent font-display mr-1">{e.minute}'</span>{playersById.get(e.player_id)?.name ?? "—"}
               </span>
             ))}
           </div>
@@ -96,7 +135,7 @@ function MatchPage() {
                   {(e.event_type==="yellow"||e.event_type==="red") && <Square className="h-3 w-3" style={{color: e.event_type==="red"?"oklch(0.6 0.22 25)":"oklch(0.85 0.18 95)"}}/>}
                   {e.event_type}
                 </Badge>
-                <span className="text-sm">{e.players?.name ?? ""} {e.description ? `— ${e.description}` : ""}</span>
+                <span className="text-sm">{playersById.get(e.player_id)?.name ?? ""} {e.description ? `— ${e.description}` : ""}</span>
               </li>
             ))}
           </ul>
