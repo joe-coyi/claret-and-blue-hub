@@ -24,10 +24,10 @@ function Article() {
       {n.image_url && <img src={n.image_url} alt={n.title} className="w-full rounded-lg mt-6"/>}
       {n.excerpt && <p className="text-lg text-muted-foreground mt-6 leading-relaxed">{n.excerpt}</p>}
       <div className="prose prose-invert max-w-none mt-6 whitespace-pre-wrap leading-relaxed">{n.body}</div>
-      {n.poll_id && (
+      {(n as any).poll_id && (
         <div className="mt-10">
           <p className="text-xs uppercase tracking-widest text-accent mb-3">Reader poll</p>
-          <PollWidget pollId={n.poll_id}/>
+          <PollWidget pollId={(n as any).poll_id}/>
         </div>
       )}
     </article>
