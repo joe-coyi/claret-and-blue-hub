@@ -95,12 +95,14 @@ function Home() {
         </div>
         <div className="grid md:grid-cols-3 gap-4">
           {upcoming.map(m => (
-            <Card key={m.id} className="stadium-card p-6 border-0">
+            <Link key={m.id} to="/matches/$id" params={{ id: m.id }} className="block h-full">
+            <Card className="stadium-card p-6 border-0 h-full hover:border-accent transition-colors">
               <div className="text-xs uppercase text-muted-foreground tracking-widest">{m.competition} · {m.is_home ? "Home" : "Away"}</div>
               <div className="mt-3 font-display text-2xl">West Ham vs {m.opponent}</div>
               <div className="mt-1 text-sm text-muted-foreground">{new Date(m.kickoff).toLocaleString(undefined,{ weekday:"short", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"})}</div>
               <div className="mt-4 text-xs text-muted-foreground">{m.venue}</div>
             </Card>
+            </Link>
           ))}
           {upcoming.length === 0 && <p className="text-muted-foreground">No upcoming fixtures.</p>}
         </div>
@@ -119,7 +121,8 @@ function Home() {
             const won = (m.west_ham_score ?? 0) > (m.opponent_score ?? 0);
             const draw = m.west_ham_score === m.opponent_score;
             return (
-              <Card key={m.id} className="stadium-card p-6 border-0 flex items-center justify-between">
+              <Link key={m.id} to="/matches/$id" params={{ id: m.id }} className="block">
+              <Card className="stadium-card p-6 border-0 flex items-center justify-between hover:border-accent transition-colors">
                 <div>
                   <div className="text-xs uppercase tracking-widest text-muted-foreground">{m.competition}</div>
                   <div className="font-display text-xl mt-2">{m.is_home ? "West Ham" : m.opponent}<span className="mx-2 text-muted-foreground">vs</span>{m.is_home ? m.opponent : "West Ham"}</div>
@@ -129,6 +132,7 @@ function Home() {
                   <div className={`text-xs uppercase tracking-widest mt-1 ${won?"text-accent":draw?"text-muted-foreground":"text-destructive"}`}>{won?"Win":draw?"Draw":"Loss"}</div>
                 </div>
               </Card>
+              </Link>
             );
           })}
         </div>
