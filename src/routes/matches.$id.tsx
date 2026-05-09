@@ -29,7 +29,9 @@ function MatchPage() {
     },
   });
 
-  const playerIds = Array.from(new Set((events ?? []).map((event: any) => event.player_id).filter(Boolean)));
+  const playerIds = Array.from(
+    new Set((events ?? []).map((event: any) => event.player_id).filter((value): value is string => typeof value === "string" && value.length > 0))
+  );
   const { data: eventPlayers } = useQuery({
     queryKey: ["event-players", id, playerIds.join(",")],
     enabled: playerIds.length > 0,
