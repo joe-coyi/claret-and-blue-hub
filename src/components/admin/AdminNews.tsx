@@ -30,7 +30,7 @@ export function AdminNews() {
     e.preventDefault();
     const slug = slugify(f.title) + "-" + Math.random().toString(36).slice(2,6);
     const { poll_id, ...rest } = f;
-    const { error } = await supabase.from("news").insert({ ...rest, slug, poll_id: poll_id || null });
+    const { error } = await supabase.from("news").insert({ ...rest, slug, poll_id: poll_id || null } as any);
     if (error) toast.error(error.message); else { toast.success("Article published"); setF({ title:"", excerpt:"", body:"", image_url:"", category:"general", author:"", published:true, poll_id:"" }); qc.invalidateQueries({queryKey:["admin-news"]}); }
   }
 
